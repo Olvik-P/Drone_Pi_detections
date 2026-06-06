@@ -107,7 +107,7 @@ def show_string_dji_googles(
             time.sleep(0.1)  # Даем время на обработку
 
         # 2. Отправка текста
-        print(f'📝 Отправка текста: '{text}' в row={row}, col={col}')
+        print(f'📝 Отправка текста: {text} в row={row}, col={col}')
         write_packet = create_osd_string(row, col, text, font, blink)
         print(f'   Пакет ({len(write_packet)} байт): {write_packet.hex()}')
         ser.write(write_packet)

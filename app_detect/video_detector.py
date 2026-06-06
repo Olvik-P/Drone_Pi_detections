@@ -32,30 +32,38 @@ class DetectionResult:
         """Возвращает ограничивающую рамку в формате (x1, y1, x2, y2)."""
         return (self.x, self.y, self.x + self.width, self.y + self.height)
 
-    def bbox_to_osd_grid(detection, canvas_cols=60, canvas_rows=22):
+    @staticmethod
+    def bbox_to_osd_grid(
+        bbox_normalized,
+        canvas_cols: int = 60,
+        canvas_rows: int = 22
+    ) -> tuple:
         """
         Конвертирует нормализованный BBox YuNet в координаты OSD-сетки.
 
+        YuNet возвращает координаты в диапазоне 0.0–1.0 относительно
+        размеров кадра. Этот метод масштабирует их в OSD-сетку
+        (60 колонок x 22 строки для DJI FPV).
+
         Аргументы:
-            bbox: список/кортеж [x1, y1, x2, y2] в диапазоне 0.0-1.0
+            bbox_normalized: кортеж/список [x1, y1, x2, y2] в диапазоне 0.0-1.0
             canvas_cols: ширина OSD-холста (60 для DJI)
             canvas_rows: высота OSD-холста (22 для DJI)
 
         Возвращает:
-            tuple: (center_col, center_row) — координаты MSP_DP_WRITE_STRING
+            tuple: (center_col, center_row) — координаты OSD
         """
-        x, y, x_width, y_height = detection.bbox
+        x1, y1, x2, y2 = bbox_normalized
 
         # Вычисляем геометрический центр рамки (в нормализованных координатах)
-        center_x = int((x + x_width) / 2)
-        center_y = int((y + y_height) / 2)
+        center_x = (x1 + x2) / 2.0
+        center_y = (y1 + y2) / 2.0
 
         # Масштабируем в OSD-сетку
-        # int() округляет вниз, что даёт стандартное поведение для индексации с 0
-        osd_col = int((center_x / constants.CAMERA_WIDTH) * 60)
-        osd_row = int((center_y / constants.CAMERA_HEIGHT) * 22)
+        osd_col = int(center_x * canvas_cols)
+        osd_row = int(center_y * canvas_rows)
 
-        # Защита от выхода за границы (на всякий случай)
+        # Защита от выхода за границы
         osd_col = max(0, min(osd_col, canvas_cols - 1))
         osd_row = max(0, min(osd_row, canvas_rows - 1))
 
@@ -190,7 +198,17 @@ class FaceDetector:
         for detection in detections:
             x1, y1, x2, y2 = detection.bbox
 
-            label_osd_col, label_osd_row = detection.bbox_to_osd_grid()
+            # Нормализованные координаты для OSD-сетки
+            frame_height, frame_width = frame.shape[:2]
+            bbox_norm = (
+                x1 / frame_width,
+                y1 / frame_height,
+                x2 / frame_width,
+                y2 / frame_height,
+            )
+            label_osd_col, label_osd_row = DetectionResult.bbox_to_osd_grid(
+                bbox_norm
+            )
 
             # Draw rectangle around face
             cv2.rectangle(

@@ -47,6 +47,22 @@ WINDOW_TITLE: str = 'Real-time Human Detection'
 SEPARATOR_LENGTH: int = 40
 
 # ============================================================================
+# OSD / MSP Parameters
+# ============================================================================
+OSD_COLS: int = 60
+OSD_ROWS: int = 22
+OSD_DEFAULT_TEXT: str = 'Human'
+OSD_FONT_DEFAULT: int = 0
+OSD_BLINK_DEFAULT: bool = False
+
+# ============================================================================
+# MSP Serial Port Defaults
+# ============================================================================
+DEFAULT_MSP_PORT: str = '/dev/ttyAMA0'
+MSP_BAUDRATE: int = 115200
+MSP_TIMEOUT: float = 0.1
+
+# ============================================================================
 # Log Messages
 # ============================================================================
 # Error messages

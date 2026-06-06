@@ -116,3 +116,4 @@ def detect_face() -> None:
 if __name__ == '__main__':
     detect_face()
     logger_detect.info('Определение лица в кадре завершено.')
+ 
