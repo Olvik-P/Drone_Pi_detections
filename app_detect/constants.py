@@ -58,7 +58,7 @@ OSD_BLINK_DEFAULT: bool = False
 # ============================================================================
 # MSP Serial Port Defaults
 # ============================================================================
-DEFAULT_MSP_PORT: str = '/dev/ttyAMA0'
+DEFAULT_MSP_PORT: str = '/dev/ttyS0'
 MSP_BAUDRATE: int = 115200
 MSP_TIMEOUT: float = 0.1
 
